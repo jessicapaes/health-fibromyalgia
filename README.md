@@ -352,11 +352,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### **For Technical Issues:**
 - GitHub Issues: Report bugs and technical problems
-- Email: [your-email@domain.com]
 
 ### **For Medical Questions:**
-- **Consult your healthcare provider** - this app does not provide medical advice
-- Fibromyalgia Network: (800) 853-2929 or www.fmnetnews.com
+- **Always consult your healthcare provider** - this app does not provide medical advice
+- **For Australian residents:**
+  - Your GP (General Practitioner) or rheumatologist
+  - Healthdirect Australia: 1800 022 222 or www.healthdirect.gov.au
+  - Arthritis Australia: 1800 011 041 or www.arthritisaustralia.com.au
+- **International:**
+  - Fibromyalgia Network: (800) 853-2929 or www.fmnetnews.com
 
 ### **For Educational Use:**
 - Include attribution when using in educational settings
