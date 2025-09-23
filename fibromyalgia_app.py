@@ -58,95 +58,154 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-def create_interactive_body_diagram(pain_areas):
-    """Create an interactive body diagram showing pain areas"""
+def create_anatomical_body_diagram(pain_areas):
+    """Create an anatomical body diagram matching the medical form"""
     
-    # Body part coordinates for front and back view
-    body_parts = {
-        # Front view coordinates
-        'Shoulder girdle, left': {'x': 0.25, 'y': 0.15, 'view': 'front'},
-        'Shoulder girdle, right': {'x': 0.75, 'y': 0.15, 'view': 'front'},
-        'Upper arm, left': {'x': 0.15, 'y': 0.25, 'view': 'front'},
-        'Upper arm, right': {'x': 0.85, 'y': 0.25, 'view': 'front'},
-        'Lower arm, left': {'x': 0.1, 'y': 0.4, 'view': 'front'},
-        'Lower arm, right': {'x': 0.9, 'y': 0.4, 'view': 'front'},
-        'Chest': {'x': 0.5, 'y': 0.2, 'view': 'front'},
-        'Abdomen': {'x': 0.5, 'y': 0.35, 'view': 'front'},
-        'Hip (buttock) left': {'x': 0.35, 'y': 0.45, 'view': 'front'},
-        'Hip (buttock) right': {'x': 0.65, 'y': 0.45, 'view': 'front'},
-        'Upper leg left': {'x': 0.35, 'y': 0.6, 'view': 'front'},
-        'Upper leg right': {'x': 0.65, 'y': 0.6, 'view': 'front'},
-        'Lower leg left': {'x': 0.35, 'y': 0.8, 'view': 'front'},
-        'Lower leg right': {'x': 0.65, 'y': 0.8, 'view': 'front'},
-        'Jaw left': {'x': 0.4, 'y': 0.05, 'view': 'front'},
-        'Jaw right': {'x': 0.6, 'y': 0.05, 'view': 'front'},
-        # Back view coordinates  
-        'Neck': {'x': 0.5, 'y': 0.1, 'view': 'back'},
-        'Upper back': {'x': 0.5, 'y': 0.25, 'view': 'back'},
-        'Lower back': {'x': 0.5, 'y': 0.4, 'view': 'back'},
+    # Define body regions with their shapes and colors (matching the medical diagram)
+    body_regions = {
+        # Front view - defined as polygons matching the medical diagram colors
+        'front_regions': {
+            'Neck': {'coords': [[0.45, 0.88], [0.55, 0.88], [0.55, 0.92], [0.45, 0.92]], 'color': 'red'},
+            'Shoulder girdle, left': {'coords': [[0.25, 0.82], [0.35, 0.82], [0.35, 0.88], [0.25, 0.88]], 'color': 'red'},
+            'Shoulder girdle, right': {'coords': [[0.65, 0.82], [0.75, 0.82], [0.75, 0.88], [0.65, 0.88]], 'color': 'red'},
+            'Upper arm, left': {'coords': [[0.15, 0.65], [0.25, 0.65], [0.25, 0.82], [0.15, 0.82]], 'color': 'lightblue'},
+            'Upper arm, right': {'coords': [[0.75, 0.65], [0.85, 0.65], [0.85, 0.82], [0.75, 0.82]], 'color': 'lightblue'},
+            'Lower arm, left': {'coords': [[0.10, 0.45], [0.20, 0.45], [0.20, 0.65], [0.10, 0.65]], 'color': 'lightgreen'},
+            'Lower arm, right': {'coords': [[0.80, 0.45], [0.90, 0.45], [0.90, 0.65], [0.80, 0.65]], 'color': 'lightgreen'},
+            'Chest': {'coords': [[0.35, 0.70], [0.65, 0.70], [0.65, 0.85], [0.35, 0.85]], 'color': 'lightblue'},
+            'Abdomen': {'coords': [[0.40, 0.55], [0.60, 0.55], [0.60, 0.70], [0.40, 0.70]], 'color': 'lightgreen'},
+            'Hip (buttock) left': {'coords': [[0.30, 0.45], [0.45, 0.45], [0.45, 0.55], [0.30, 0.55]], 'color': 'yellow'},
+            'Hip (buttock) right': {'coords': [[0.55, 0.45], [0.70, 0.45], [0.70, 0.55], [0.55, 0.55]], 'color': 'yellow'},
+            'Upper leg left': {'coords': [[0.35, 0.25], [0.45, 0.25], [0.45, 0.45], [0.35, 0.45]], 'color': 'red'},
+            'Upper leg right': {'coords': [[0.55, 0.25], [0.65, 0.25], [0.65, 0.45], [0.55, 0.45]], 'color': 'red'},
+            'Lower leg left': {'coords': [[0.37, 0.05], [0.43, 0.05], [0.43, 0.25], [0.37, 0.25]], 'color': 'purple'},
+            'Lower leg right': {'coords': [[0.57, 0.05], [0.63, 0.05], [0.63, 0.25], [0.57, 0.25]], 'color': 'purple'},
+            'Jaw left': {'coords': [[0.42, 0.92], [0.48, 0.92], [0.48, 0.98], [0.42, 0.98]], 'color': 'orange'},
+            'Jaw right': {'coords': [[0.52, 0.92], [0.58, 0.92], [0.58, 0.98], [0.52, 0.98]], 'color': 'orange'},
+        },
+        'back_regions': {
+            'Upper back': {'coords': [[0.35, 0.70], [0.65, 0.70], [0.65, 0.85], [0.35, 0.85]], 'color': 'darkgreen'},
+            'Lower back': {'coords': [[0.40, 0.50], [0.60, 0.50], [0.60, 0.70], [0.40, 0.70]], 'color': 'purple'},
+        }
     }
     
-    fig = go.Figure()
+    # Create subplot with front and back views
+    from plotly.subplots import make_subplots
     
-    # Create front body outline
-    front_body_x = [0.2, 0.8, 0.8, 0.7, 0.7, 0.85, 0.85, 0.75, 0.75, 0.65, 0.65, 0.35, 0.35, 0.25, 0.25, 0.15, 0.15, 0.3, 0.3, 0.2, 0.2]
-    front_body_y = [0.95, 0.95, 0.75, 0.75, 0.5, 0.5, 0.35, 0.35, 0.1, 0.1, 0.0, 0.0, 0.1, 0.1, 0.35, 0.35, 0.5, 0.5, 0.75, 0.75, 0.95]
+    fig = make_subplots(
+        rows=1, cols=2,
+        subplot_titles=("Back Side", "Front Side"),
+        specs=[[{"secondary_y": False}, {"secondary_y": False}]]
+    )
+    
+    # Back view (left subplot)
+    back_regions = body_regions['back_regions']
+    for region_name, region_data in back_regions.items():
+        coords = region_data['coords']
+        base_color = region_data['color']
+        
+        # Determine if this region has pain
+        is_pain_area = region_name in pain_areas
+        fill_color = 'red' if is_pain_area else base_color
+        line_color = 'darkred' if is_pain_area else 'black'
+        line_width = 3 if is_pain_area else 1
+        
+        x_coords = [coord[0] for coord in coords] + [coords[0][0]]  # Close the shape
+        y_coords = [coord[1] for coord in coords] + [coords[0][1]]
+        
+        fig.add_trace(go.Scatter(
+            x=x_coords, y=y_coords,
+            fill='toself',
+            fillcolor=fill_color,
+            line=dict(color=line_color, width=line_width),
+            mode='lines',
+            name=region_name,
+            hovertemplate=f"<b>{region_name}</b><br>Status: {'PAIN AREA' if is_pain_area else 'No Pain'}<extra></extra>",
+            showlegend=False
+        ), row=1, col=1)
+    
+    # Add back body outline
+    back_outline_x = [0.3, 0.7, 0.7, 0.65, 0.65, 0.35, 0.35, 0.3, 0.3]
+    back_outline_y = [0.95, 0.95, 0.85, 0.45, 0.05, 0.05, 0.45, 0.85, 0.95]
     
     fig.add_trace(go.Scatter(
-        x=front_body_x, y=front_body_y,
+        x=back_outline_x, y=back_outline_y,
         mode='lines',
-        line=dict(color='lightgray', width=2),
-        fill='toself',
-        fillcolor='rgba(240,240,240,0.3)',
-        name='Body Outline',
-        showlegend=False
-    ))
+        line=dict(color='black', width=2),
+        fill='none',
+        showlegend=False,
+        hoverinfo='skip'
+    ), row=1, col=1)
     
-    # Add head circle
+    # Add head for back view
     fig.add_shape(
         type="circle",
-        x0=0.4, y0=0.0, x1=0.6, y1=0.1,
-        line=dict(color="lightgray", width=2),
-        fillcolor="rgba(240,240,240,0.3)"
+        x0=0.45, y0=0.90, x1=0.55, y1=1.0,
+        line=dict(color="black", width=2),
+        fillcolor="lightgray",
+        row=1, col=1
     )
     
-    # Add pain points
-    pain_x, pain_y, pain_text, colors = [], [], [], []
-    for area, coords in body_parts.items():
-        if area in pain_areas:
-            pain_x.append(coords['x'])
-            pain_y.append(coords['y'])
-            pain_text.append(area)
-            colors.append('red')
-        else:
-            pain_x.append(coords['x'])
-            pain_y.append(coords['y'])
-            pain_text.append(area)
-            colors.append('lightblue')
+    # Front view (right subplot) - with all the colorful regions
+    front_regions = body_regions['front_regions']
+    for region_name, region_data in front_regions.items():
+        coords = region_data['coords']
+        base_color = region_data['color']
+        
+        # Determine if this region has pain
+        is_pain_area = region_name in pain_areas
+        fill_color = 'red' if is_pain_area else base_color
+        line_color = 'darkred' if is_pain_area else 'black'
+        line_width = 3 if is_pain_area else 1
+        
+        x_coords = [coord[0] for coord in coords] + [coords[0][0]]  # Close the shape
+        y_coords = [coord[1] for coord in coords] + [coords[0][1]]
+        
+        fig.add_trace(go.Scatter(
+            x=x_coords, y=y_coords,
+            fill='toself',
+            fillcolor=fill_color,
+            line=dict(color=line_color, width=line_width),
+            mode='lines',
+            name=region_name,
+            hovertemplate=f"<b>{region_name}</b><br>Status: {'PAIN AREA ✓' if is_pain_area else 'No Pain'}<extra></extra>",
+            showlegend=False
+        ), row=1, col=2)
+    
+    # Add front body outline
+    front_outline_x = [0.3, 0.7, 0.7, 0.85, 0.85, 0.75, 0.75, 0.65, 0.65, 0.35, 0.35, 0.25, 0.25, 0.15, 0.15, 0.3, 0.3]
+    front_outline_y = [0.95, 0.95, 0.85, 0.85, 0.65, 0.65, 0.45, 0.45, 0.05, 0.05, 0.45, 0.45, 0.65, 0.65, 0.85, 0.85, 0.95]
     
     fig.add_trace(go.Scatter(
-        x=pain_x, y=pain_y,
-        mode='markers',
-        marker=dict(
-            size=15,
-            color=colors,
-            opacity=0.8,
-            line=dict(width=2, color='darkblue')
-        ),
-        text=pain_text,
-        hoverinfo='text',
-        name='Pain Areas',
-        showlegend=False
-    ))
+        x=front_outline_x, y=front_outline_y,
+        mode='lines',
+        line=dict(color='black', width=2),
+        fill='none',
+        showlegend=False,
+        hoverinfo='skip'
+    ), row=1, col=2)
     
-    fig.update_layout(
-        title="Interactive Body Diagram - Pain Areas",
-        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-0.1, 1.1]),
-        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-0.1, 1.0]),
-        height=500,
-        plot_bgcolor='white',
-        margin=dict(l=20, r=20, t=40, b=20)
+    # Add head for front view
+    fig.add_shape(
+        type="circle",
+        x0=0.45, y0=0.90, x1=0.55, y1=1.0,
+        line=dict(color="black", width=2),
+        fillcolor="lightgray",
+        row=1, col=2
     )
+    
+    # Update layout
+    fig.update_layout(
+        title="Medical Body Diagram - Fibromyalgia Pain Assessment",
+        height=600,
+        showlegend=False,
+        plot_bgcolor='white',
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
+    
+    # Update axes for both subplots
+    fig.update_xaxes(showgrid=False, zeroline=False, showticklabels=False, range=[0, 1])
+    fig.update_yaxes(showgrid=False, zeroline=False, showticklabels=False, range=[0, 1])
     
     return fig
 
@@ -238,17 +297,69 @@ def main():
                         selected_pain_areas.append(area)
         
         with col2:
-            # Show body diagram in sidebar
-            if selected_pain_areas:
-                st.markdown("### Pain Visualization")
-                body_fig = create_interactive_body_diagram(selected_pain_areas)
-                st.plotly_chart(body_fig, use_container_width=True)
+            # Show simple but effective pain area summary
+            st.markdown("### Pain Area Summary")
+            
+            # Group areas by body region
+            regions = {
+                "🧠 Head/Neck": ['Neck', 'Jaw left', 'Jaw right'],
+                "💪 Arms & Shoulders": [
+                    'Shoulder girdle, left', 'Shoulder girdle, right',
+                    'Upper arm, left', 'Upper arm, right', 
+                    'Lower arm, left', 'Lower arm, right'
+                ],
+                "🫁 Torso": ['Chest', 'Abdomen', 'Upper back', 'Lower back'],
+                "🦵 Hips & Legs": [
+                    'Hip (buttock) left', 'Hip (buttock) right',
+                    'Upper leg left', 'Upper leg right',
+                    'Lower leg left', 'Lower leg right'
+                ]
+            }
+            
+            total_pain_areas = 0
+            for region, areas in regions.items():
+                pain_count = sum(1 for area in areas if area in selected_pain_areas and area != "None of these areas")
+                total_areas = len(areas)
+                percentage = (pain_count / total_areas * 100) if total_areas > 0 else 0
+                
+                # Display region summary
+                st.markdown(f"**{region}**")
+                if pain_count > 0:
+                    st.progress(percentage / 100)
+                    st.markdown(f"🔴 {pain_count}/{total_areas} areas with pain ({percentage:.0f}%)")
+                    total_pain_areas += pain_count
+                else:
+                    st.markdown(f"⚪ No pain in this region (0/{total_areas})")
+                st.markdown("")  # Add spacing
+            
+            # Overall summary
+            st.markdown("---")
+            st.markdown("**📊 Overall Summary:**")
+            st.metric("Total Pain Areas", f"{total_pain_areas}/19", 
+                     delta=f"WPI Score: {total_pain_areas}")
+            
+            # Show selected areas in expandable section
+            if selected_pain_areas and "None of these areas" not in selected_pain_areas:
+                with st.expander("📋 View All Selected Pain Areas"):
+                    for area in selected_pain_areas:
+                        if area != "None of these areas":
+                            st.write(f"🔴 {area}")
+            
+            # Add helpful tip
+            st.info("💡 **Tip:** A WPI score of 7+ suggests widespread pain pattern")
         
         st.markdown("---")
         
         # Part 2a: Symptom Severity
-        st.subheader("Part 2a: Symptom Severity Score")
-        st.markdown("**Indicate your level of symptom severity over the past week:**")
+        st.subheader("Part 2a: Symptom Severity Score (SS)")
+        st.markdown("""
+        **The SS Score measures how severe your symptoms are (0-12 total):**
+        - Part 2a: Core symptoms severity (0-9) - fatigue, sleep, thinking
+        - Part 2b: Additional symptoms count (0-3) - how many other symptoms you have
+        - Higher score = more severe or numerous symptoms
+        
+        **Indicate your level of symptom severity over the past week:**
+        """)
         
         severity_options = [
             "0 = No problem",
@@ -278,7 +389,13 @@ def main():
         
         # Part 2b: Other Symptoms
         st.subheader("Part 2b: Other Symptoms")
-        st.markdown("**Check each of the following OTHER SYMPTOMS that you have experienced over the past week:**")
+        st.markdown("""
+        **Additional symptoms contribute to your SS score:**
+        - 0 symptoms = 0 points | 1-10 symptoms = 1 point
+        - 11-24 symptoms = 2 points | 25+ symptoms = 3 points
+        
+        **Check each of the following OTHER SYMPTOMS that you have experienced over the past week:**
+        """)
         
         other_symptoms = [
             "Muscle pain", "Irritable bowel syndrome", "Fatigue/tiredness", "Thinking or remembering problem",
@@ -286,7 +403,7 @@ def main():
             "Dizziness", "Insomnia", "Depression", "Constipation",
             "Pain in upper abdomen", "Nausea", "Nervousness", "Chest pain",
             "Blurred vision", "Fever", "Diarrhea", "Dry mouth",
-            "Itching", "Wheezing", "Raynauld's", "Hives/welts",
+            "Itching", "Wheezing", "Raynauld's (fingers/toes turn white/blue in cold)", "Hives/welts",
             "Ringing in ears", "Vomiting", "Heartburn", "Oral ulcers",
             "Loss/change in taste", "Seizures", "Dry eyes", "Shortness of breath",
             "Loss of appetite", "Rash", "Sun sensitivity", "Hearing difficulties",
@@ -338,7 +455,8 @@ def main():
             <div class="score-card">
                 <h3 style='color: #667eea; margin-bottom: 0;'>WPI Score</h3>
                 <h1 style='color: #333; margin-top: 0;'>{}/19</h1>
-                <p>Widespread Pain Index</p>
+                <p><strong>Widespread Pain Index</strong><br>
+                <small>Counts how many body areas have pain</small></p>
             </div>
             """.format(st.session_state.wpi_score), unsafe_allow_html=True)
         
@@ -347,7 +465,8 @@ def main():
             <div class="score-card">
                 <h3 style='color: #667eea; margin-bottom: 0;'>SS Score 2a</h3>
                 <h1 style='color: #333; margin-top: 0;'>{}/9</h1>
-                <p>Symptom Severity 2a</p>
+                <p><strong>Core Symptoms Severity</strong><br>
+                <small>Fatigue + Sleep + Thinking problems</small></p>
             </div>
             """.format(st.session_state.ss_2a_score), unsafe_allow_html=True)
         
@@ -356,7 +475,8 @@ def main():
             <div class="score-card">
                 <h3 style='color: #667eea; margin-bottom: 0;'>SS Score 2b</h3>
                 <h1 style='color: #333; margin-top: 0;'>{}/3</h1>
-                <p>Other Symptoms</p>
+                <p><strong>Additional Symptoms</strong><br>
+                <small>Based on count of other symptoms</small></p>
             </div>
             """.format(st.session_state.ss_2b_score), unsafe_allow_html=True)
         
@@ -365,7 +485,8 @@ def main():
             <div class="score-card">
                 <h3 style='color: #667eea; margin-bottom: 0;'>Total SS Score</h3>
                 <h1 style='color: #333; margin-top: 0;'>{}/12</h1>
-                <p>Combined Severity</p>
+                <p><strong>Combined Severity Score</strong><br>
+                <small>SS 2a + SS 2b = Total symptom burden</small></p>
             </div>
             """.format(st.session_state.ss_score), unsafe_allow_html=True)
         
