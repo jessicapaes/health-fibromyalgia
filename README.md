@@ -23,20 +23,20 @@ A comprehensive, interactive web application for conducting fibromyalgia assessm
 ### 🎯 **Core Assessment Tools**
 - **Widespread Pain Index (WPI)** calculation with 19 body regions
 - **Symptom Severity Score (SS)** with 3 core symptoms + 41 additional symptoms
-- **Interactive body diagram** visualization showing pain areas in real-time
+- **Pain area visualization** with progress bars and regional summaries
 - **Automatic diagnostic criteria evaluation** following official medical standards
 
 ### 🎨 **Advanced User Interface**
 - **Professional medical-grade design** with custom CSS styling
 - **Responsive layout** that works on desktop, tablet, and mobile
-- **Interactive visualizations** using Plotly for charts and body diagrams
+- **Interactive visualizations** using Plotly for charts and analytics
 - **Real-time score updates** as you complete the assessment
 
 ### 📊 **Data Analytics & Visualization**
 - **Score breakdown charts** comparing individual scores to maximum possible
-- **Pain distribution analysis** by body regions (pie charts)
+- **Pain distribution analysis** by body regions (progress bars and pie charts)
 - **Comprehensive results dashboard** with visual diagnostic criteria evaluation
-- **Historical comparison capabilities**
+- **Regional pain summaries** with percentages and visual indicators
 
 ### 💾 **Export & Data Management**
 - **JSON export** for detailed medical records
@@ -52,8 +52,8 @@ A comprehensive, interactive web application for conducting fibromyalgia assessm
 ## 🎬 Demo
 
 ### Main Assessment Interface
-- Interactive checkboxes for 19 pain areas
-- Real-time body diagram updates
+- Interactive checkboxes for 19 pain areas (compact 4-column layout)
+- Real-time pain area summaries with progress bars
 - Severity scales (0-3) for core symptoms
 - Comprehensive symptom checklist (41 items)
 
@@ -79,7 +79,7 @@ A comprehensive, interactive web application for conducting fibromyalgia assessm
 
 2. **Install required packages:**
    ```bash
-   pip install streamlit plotly pandas
+   pip install -r requirements.txt
    ```
 
 3. **Run the application:**
@@ -103,11 +103,20 @@ fibro_env\Scripts\activate
 source fibro_env/bin/activate
 
 # Install packages
-pip install streamlit plotly pandas
+pip install -r requirements.txt
 
 # Run the app
 streamlit run fibromyalgia_app.py
 ```
+
+### Streamlit Cloud Deployment
+
+For deploying on Streamlit Cloud, ensure you have:
+1. `fibromyalgia_app.py` - Main application file
+2. `requirements.txt` - Python dependencies (essential for cloud deployment)
+3. `README.md` - This documentation
+
+The `requirements.txt` file is **critical** for cloud deployment as it tells Streamlit Cloud which packages to install.
 
 ## 🚀 Usage
 
