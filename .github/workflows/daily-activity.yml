@@ -1,0 +1,40 @@
+name: Daily Activity Update
+
+on:
+  schedule:
+    # Multiple times per day for more activity
+    - cron: '0 9 * * *'   # 9 AM UTC
+    - cron: '0 14 * * *'  # 2 PM UTC
+    - cron: '0 19 * * *'  # 7 PM UTC
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Update activity log
+      run: |
+        if [ ! -f activity.md ]; then
+          echo "# Activity Log" > activity.md
+          echo "" >> activity.md
+        fi
+        echo "## $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> activity.md
+        echo "Automated activity update" >> activity.md
+        echo "" >> activity.md
+    
+    - name: Commit and push
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add activity.md
+        git diff --staged --quiet || git commit -m "chore: update activity log [skip ci]"
+        git push
+
